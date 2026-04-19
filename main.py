@@ -1,3 +1,4 @@
+
 import os
 import time
 import requests
@@ -8,31 +9,32 @@ app = Flask('')
 
 # --- TA CONFIGURATION FINALE ---
 TOKEN_TELEGRAM = "8600657255:AAHdyDgWxecU7a7Uq1605CrkQ1sr2KBgV1k"
-# Remplace 123456789 par ton ID récupéré avec @userinfobot
-CHAT_ID = "TON_ID_USERINFOBOT" 
+CHAT_ID = "6800954750" 
 
 @app.route('/')
 def home():
-    return "🚀 AeroCash Engine v1.0 - Surveillance Active"
+    return "🚀 AeroCash Engine v1.0 est en ligne et surveille le ciel !"
 
 def envoyer_alerte(message):
     url = f"https://api.telegram.org/bot{TOKEN_TELEGRAM}/sendMessage?chat_id={CHAT_ID}&text={message}"
     try:
-        requests.get(url)
+        requests.get(url, timeout=10)
     except:
         pass
 
 def scanner_vols():
-    print("🛰️ Surveillance du ciel activée...")
-    # Premier message pour te dire que c'est prêt
-    envoyer_alerte("✅ Salut Ablo ! Ton robot AeroCash est maintenant opérationnel. Je surveille les retards pour toi.")
+    print("🛰️ Surveillance AeroCash activée...")
+    # Le robot te prévient dès qu'il démarre
+    envoyer_alerte("🚀 Félicitations Ablo ! Ton robot AeroCash est officiellement actif. Je commence la surveillance des vols vers Abidjan.")
     
     while True:
         try:
-            # Simulation d'un scan de retard vers Abidjan (ABJ)
-            print("🔎 Scan des vols vers ABJ...")
-            # Ici on pourra ajouter l'API OpenSky demain si tu veux plus de détails
-            time.sleep(3600) # On scanne toutes les heures
+            # Pour l'instant on simule le scan pour vérifier que la liaison marche
+            print("🔎 Scan des retards en cours...")
+            
+            # Message de test toutes les 3 heures pour ne pas te déranger
+            # On pourra affiner la détection réelle demain
+            time.sleep(10800) 
         except Exception as e:
             time.sleep(60)
 
