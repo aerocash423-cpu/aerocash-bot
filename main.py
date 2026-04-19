@@ -6,46 +6,45 @@ from threading import Thread
 
 app = Flask('')
 
-# Ta configuration validée
-TOKEN_TELEGRAM = "8600657255:AAHdyDgWxecU7a7Uq1605CrkQ1sr2KBgV1k"
-CHAT_ID = "6800954750" 
+# --- RÉCUPÉRATION SÉCURISÉE DEPUIS LE COFFRE-FORT RENDER ---
+TOKEN_TELEGRAM = os.environ.get('TELEGRAM_TOKEN')
+CHAT_ID = os.environ.get('CHAT_ID')
 
 @app.route('/')
 def home():
-    return "🚀 AeroCash Engine v1.0 - Radar Abidjan Actif"
+    return "🚀 AeroCash Engine v1.0 - Radar Sécurisé et Actif"
 
 def envoyer_alerte(message):
+    if not TOKEN_TELEGRAM or not CHAT_ID:
+        print("Erreur : Variables d'environnement manquantes sur Render")
+        return
+        
     url = f"https://api.telegram.org/bot{TOKEN_TELEGRAM}/sendMessage?chat_id={CHAT_ID}&text={message}"
     try:
         requests.get(url, timeout=10)
-    except:
-        pass
+    except Exception as e:
+        print(f"Erreur envoi : {e}")
 
 def scanner_vols_abidjan():
-    print("🛰️ Démarrage du Radar AeroCash...")
-    envoyer_alerte("🎯 Système finalisé ! Je surveille maintenant les vols vers Abidjan (DIAP/ABJ).")
+    print("🛰️ Radar AeroCash en mode surveillance sécurisée...")
+    # Petit message pour confirmer que le coffre-fort fonctionne
+    envoyer_alerte("🔐 Système sécurisé ! Les clés sont maintenant protégées dans le coffre-fort. Surveillance en cours.")
     
     while True:
         try:
-            # Connexion à l'API OpenSky pour voir les avions au-dessus de l'Afrique/Europe
-            # On cherche spécifiquement les gros transporteurs (AFR, CRX, etc.)
+            # Simulation du scan de l'API aérienne
             url_api = "https://opensky-network.org/api/states/all"
             response = requests.get(url_api, timeout=15)
             
             if response.status_code == 200:
                 data = response.json().get('states', [])
-                # On compte combien d'avions sont en l'air globalement pour le rapport
                 nb_vols = len(data) if data else 0
-                
-                # Ici, on simule le filtrage intelligent
-                # On t'envoie un petit rapport toutes les 4 heures pour confirmer que le bot dort pas
-                envoyer_alerte(f"📈 Rapport Radar : {nb_vols} vols scannés. Aucun retard majeur détecté pour l'instant vers ABJ.")
+                print(f"🔎 Scan effectué : {nb_vols} vols détectés.")
             
-            # Pause de 4 heures pour respecter les limites gratuites
+            # Rapport toutes les 4 heures
             time.sleep(14400) 
             
         except Exception as e:
-            print(f"Erreur de connexion : {e}")
             time.sleep(300)
 
 def run():
