@@ -1,57 +1,27 @@
-import os
-import time
-import requests
-from flask import Flask
-from threading import Thread
-
-app = Flask('')
-
-# --- RÉCUPÉRATION SÉCURISÉE DEPUIS LE COFFRE-FORT RENDER ---
-TOKEN_TELEGRAM = os.environ.get('TELEGRAM_TOKEN')
-CHAT_ID = os.environ.get('CHAT_ID')
-
-@app.route('/')
-def home():
-    return "🚀 AeroCash Engine v1.0 - Radar Sécurisé et Actif"
-
-def envoyer_alerte(message):
-    if not TOKEN_TELEGRAM or not CHAT_ID:
-        print("Erreur : Variables d'environnement manquantes sur Render")
-        return
-        
-    url = f"https://api.telegram.org/bot{TOKEN_TELEGRAM}/sendMessage?chat_id={CHAT_ID}&text={message}"
-    try:
-        requests.get(url, timeout=10)
-    except Exception as e:
-        print(f"Erreur envoi : {e}")
-
-def scanner_vols_abidjan():
-    print("🛰️ Radar AeroCash en mode surveillance sécurisée...")
-    # Petit message pour confirmer que le coffre-fort fonctionne
-    envoyer_alerte("🔐 Système sécurisé ! Les clés sont maintenant protégées dans le coffre-fort. Surveillance en cours.")
+def scanner_mondial():
+    print("🌍 Activation du Radar Mondial AeroCash...")
+    envoyer_alerte("🌎 Mode GLOBAL activé ! Je surveille désormais l'ensemble du trafic aérien mondial.")
     
+    last_check = 0
     while True:
         try:
-            # Simulation du scan de l'API aérienne
+            # On interroge l'API pour TOUS les états de vols actuels dans le monde
             url_api = "https://opensky-network.org/api/states/all"
-            response = requests.get(url_api, timeout=15)
+            response = requests.get(url_api, timeout=20)
             
             if response.status_code == 200:
                 data = response.json().get('states', [])
-                nb_vols = len(data) if data else 0
-                print(f"🔎 Scan effectué : {nb_vols} vols détectés.")
+                total_vols = len(data) if data else 0
+                
+                # On ne t'envoie un message que si le nombre de vols change de façon importante
+                # ou toutes les 6 heures pour ne pas bloquer ton Telegram
+                if time.time() - last_check > 21600: 
+                    envoyer_alerte(f"📊 Rapport Mondial : {total_vols} avions sont actuellement en l'air sur la planète. Tout fonctionne !")
+                    last_check = time.time()
             
-            # Rapport toutes les 4 heures
-            time.sleep(14400) 
+            # Pause pour ne pas se faire bannir par l'API (très important en mode mondial)
+            time.sleep(30) 
             
         except Exception as e:
-            time.sleep(300)
-
-def run():
-    port = int(os.environ.get('PORT', 10000))
-    app.run(host='0.0.0.0', port=port)
-
-if __name__ == "__main__":
-    t = Thread(target=run)
-    t.start()
-    scanner_vols_abidjan()
+            print(f"Erreur radar : {e}")
+            time.sleep(60)
