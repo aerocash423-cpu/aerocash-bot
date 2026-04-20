@@ -26,13 +26,10 @@ def scanner_afrique_europe():
     
     while True:
         try:
-            # Coordonnées pour couvrir l'Afrique et l'Europe (Latitude/Longitude)
-            # Cette zone va du sud de l'Afrique jusqu'au nord de la Norvège
+            # Zone géographique : Afrique + Europe
             params = {
-                "lamin": -35.0, # Sud (Afrique du Sud)
-                "lamin_max": 70.0, # Nord (Europe)
-                "lomin": -25.0, # Ouest (Atlantique/Sénégal)
-                "lomax": 55.0   # Est (Moyen-Orient/Est Afrique)
+                "lamin": -35.0, "lamin_max": 70.0,
+                "lomin": -25.0, "lomax": 55.0
             }
             
             url_api = "https://opensky-network.org/api/states/all"
@@ -41,17 +38,12 @@ def scanner_afrique_europe():
             if response.status_code == 200:
                 data = response.json().get('states', [])
                 nb_vols = len(data) if data else 0
-                print(f"🔎 Scan zone : {nb_vols} vols en cours.")
-                
-                # Petit rapport toutes les 6 heures pour confirmer la vigilance
-                # On pourra ajouter des filtres de retard demain
                 envoyer_alerte(f"📊 Rapport Zone : {nb_vols} vols détectés sur l'axe Afrique-Europe. Surveillance continue.")
             
-            # Pause de 6 heures pour rester discret et efficace
+            # Pause de 6 heures entre les rapports
             time.sleep(21600)
             
         except Exception as e:
-            print(f"Erreur : {e}")
             time.sleep(300)
 
 def run():
